@@ -1,3 +1,7 @@
+
+For each secret - need to open new forward ! // looks like safety stuff here ! 
+#############
+
 Play under bastion host only!!!!
 no any port open only22 !!!
 port forward on local interface use blink+ yubico // privat key never leave the hardware!!!!

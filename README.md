@@ -9,6 +9,32 @@ port forward on local interface use blink+ yubico // privat key never leave the 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Do Not forget to test all what we did !!! Crete secrets! copy the one-time link and open it on the other browser! Revil what is inside?
   try to update page - now its no avalable - thats whats mean one-time link!!!! // not avalable both ways !!!!
 

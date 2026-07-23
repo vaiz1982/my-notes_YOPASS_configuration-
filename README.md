@@ -99,3 +99,40 @@ upstream project repos so they don't get mixed into project history.
 Keeps personal setup/deployment notes reusable across projects,
 without cluttering or accidentally committing to the actual
 open-source repos being worked with (e.g. jhaals/yopass).
+
+
+
+
+
+
+
+
+
+
+
+
+###################################################
+
+** Let's clarify the actual architecture, because "inside the cluster" doesn't mean "only reachable from inside the cluster."
+
+**How it actually works:**
+- Kubernetes/k3s is just *how* yopass runs (the process manager, essentially) — it's not a barrier that traps the app inside some sealed box.
+- The pod runs the yopass server + memcached.
+- The NodePort service exposes that pod's port on the **node itself** (your EC2 box's OS-level network stack).
+- From there, *you* control who can reach it — via your SSH tunnel, via opening a port publicly, via Tailscale, whatever you choose.
+
+**So who can you actually send secrets to?**
+Anyone, as long as they can reach the URL you send them. Right now, your setup only lets *you* reach it (via SSH tunnel from your own device) — so practically, the recipient right now is just... you, testing with yourself in a second browser.
+
+**To actually share with someone else (a colleague, a friend, anyone outside this box), you have real options:**
+
+1. **Open the app port properly with TLS**, so it's a normal public website anyone can visit (this is what `yopass.se`, the public demo, does). Requires a domain + Let's Encrypt cert — more setup, but genuinely shareable with anyone.
+
+2. **Put both of you on the same private network** (Tailscale, WireGuard, or your existing VPN) — then the recipient just needs to also be on that network to reach the link. This matches your very first question at the start of this whole conversation about Tailscale.
+
+3. **SSH tunnel for each recipient** — technically possible but impractical; you'd need to give them SSH access to your box, which defeats the purpose.
+
+**Why run it in a cluster (k3s) at all, then, versus just plain Docker?**
+Honestly — for this use case (single small app, single user), Kubernetes doesn't buy you much. Its real value is things like: automatic restarts, scaling to multiple replicas, rolling updates, managing many services together. For one lightweight app like yopass, plain `docker-compose` (which we discussed early on) gets you the same result with way less complexity — which is part of why today's troubleshooting was so much heavier than it needed to be.
+
+**Bottom line:** the cluster was a good learning exercise, but for *actually* sharing secrets with other people going forward, you'd want either (a) a properly TLS'd public instance, or (b) put it behind Tailscale so anyone you invite to your tailnet can reach it — the k3s vs Docker choice is separate from that and matters less.
